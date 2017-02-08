@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>移动端触摸事件轮播</title>
+</head>
+<style>
+    body{
+        margin:0;
+    }
+    img{
+        border:0;
+        display: block;
+    }
+    .box{
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+    }
+    .warp{
+        height:auto;
+    }
+    .photo{
+        height:auto;
+        float: left;
+    }
+    .photo img{
+        width:100%;
+    }
+</style>
+<body>
+<div class="box">
+    <div class="warp">
+        <div class="photo">
+            <img src="img/ban1.jpg" alt="">
+        </div>
+        <div class="photo">
+            <img src="img/ban2.png" alt="">
+        </div>
+        <div class="photo">
+            <img src="img/ban3.png" alt="">
+        </div>
+    </div>
+</div>
+<script src="animate.js"></script>
+<script>
+    var cw=document.documentElement.clientWidth;
+    var box=document.querySelector('.box');
+    var warp=document.querySelector('.warp');
+    var photo=document.querySelectorAll('.photo');
+    warp.style.width=cw*photo.length+"px";
+    for(var i=0;i<photo.length;i++){
+        photo[i].style.width=cw+"px";
+    }
+    var t=setInterval(lunbo,2000);
+    var index=0;
+    warp.addEventListener('touchstart',function(e){
+        clearInterval(t);
+        var thing=e.targetTouches[0];
+        var start=thing.clientX;
+        var end=0;
+        var dt=e.timeStamp;
+        var ed=0;
+        window.addEventListener('touchmove',function (e) {
+            var thing=e.targetTouches[0];
+            end=thing.clientX;
+            warp.style.transform="translate3d("+(-(index*cw)+end-start)+"px,0,0)";
+            warp.style.transition="";
+        });
+        warp.addEventListener('touchend',last);
+        function last(e) {
+            t=setInterval(lunbo,2000);
+            ed=e.timeStamp;
+            end=e.changedTouches[0].clientX;
+            var time=ed-dt;
+            var juli=Math.abs(end-start);
+            warp.removeEventListener('touchend',last);
+            warp.style.transition="transform 0.4s";
+            if(Math.abs(end-start)>cw/2||(time<100&&juli>30)){
+                if(end-start>0){
+                    index--;
+                    if(index<0){
+                        index=0;
+                    }
+                }else{
+                    index++;
+                    if(index==photo.length){
+                        index=photo.length-1;
+                    }
+                }
+                warp.style.transform="translate3d("+(-(index*cw))+"px,0,0)";
+            }else{
+                warp.style.transform="translate3d("+(-(index*cw))+"px,0,0)";
+            }
+        }
+    })
+
+    var now=0;
+    function lunbo() {
+        index++;
+        if(index==photo.length){
+            index=0;
+        }
+/*//        photo.style.transition="margin-left 0.6s";
+        photo[index].style.marginLeft=cw+"px";
+//        photo[now].style.transform="translate3d(100%,0,0)";
+        animate(photo[now],{marginLeft:-cw+"px"},2000);
+        animate(photo[index],{marginLeft:0},2000);*/
+        warp.style.transition="transform 0.6s";
+        warp.style.transform="translate3d("+(-index*cw)+"px,0,0)";
+//       now=index;
+
+    }
+</script>
+</body>
+</html>
